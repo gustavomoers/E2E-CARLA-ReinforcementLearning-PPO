@@ -1,0 +1,13 @@
+logs/
+weights/
+runs/
+models/
+__pycache__/
+_out/
+weights_past/
+videos/
+Controller/__pycache__/
+Utils/__pycache__/
+.venv/
+
+
