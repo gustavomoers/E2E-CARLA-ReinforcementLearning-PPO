@@ -12,9 +12,11 @@ from callbacks import *
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.callbacks import CheckpointCallback
+import sys
+import traceback
 
 
-run = '1708371265'
+run = '1709030808'
 logdir = f"logs/{run}"
 
 
@@ -54,7 +56,20 @@ def game_loop(args):
         TIMESTEPS = 500000 # how long is each training iteration - individual steps
         model.learn(total_timesteps=TIMESTEPS, tb_log_name=f"PPO1", progress_bar=True, 
                         callback = CallbackList([tensor, save_callback]), reset_num_timesteps=False) 
-                
+        
+    except AssertionError:
+        _, _, tb = sys.exc_info()
+        traceback.print_tb(tb) # Fixed format
+        tb_info = traceback.extract_tb(tb)
+        filename, line, func, text = tb_info[-1]
+
+        print('An error occurred on line {} in statement {}'.format(line, text))
+
+        if world is not None:
+                world.destroy() 
+                   
+        exit(1)
+                    
     finally:
 
             if world is not None:
@@ -162,13 +177,13 @@ def main():
     argparser.add_argument(
         '--desired_speed',
         metavar='SPEED',
-        default='25',
+        default='15',
         type=float,
         help='desired speed for highway driving')
     argparser.add_argument(
         '--control_mode',
         metavar='CONT',
-        default='MPC',
+        default='PID',
         help='Controller')
     argparser.add_argument(
         '--planning_horizon',

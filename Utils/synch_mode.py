@@ -56,6 +56,7 @@ class CarlaSyncMode(object):
             
             data.append(lane)
             data.append(collision)
+            # print(data)
             
             assert all(x.frame == self.frame for x in data if x is not None)
             # print(data)
@@ -64,6 +65,9 @@ class CarlaSyncMode(object):
         except queue.Empty:
             print("empty queue")
             return None, None, None, None
+        
+        # finally:
+        #     return None, None, None, None
 
 
 

@@ -244,8 +244,6 @@ class World(gym.Env):
             self.camera_manager.transform_index = cam_pos_index
             self.camera_manager.set_sensor(cam_index, notify=False)
 
-        parked_position = self.parked_vehicle.get_transform().location.y
-        player_position = self.player.get_transform().location.y
 
         self.world.tick()
                    
@@ -271,9 +269,6 @@ class World(gym.Env):
 
 
 
-            parked_position = self.parked_vehicle.get_transform().location.y
-            player_position = self.player.get_transform().location.y
-
             ttc = self.time_to_collison()
             # print(f'ttc: {ttc}')
 
@@ -287,7 +282,10 @@ class World(gym.Env):
 
 
             snapshot, image_rgb, lane, collision = self.synch_mode.tick(timeout=10.0)
-            img = process_img2(self, image_rgb)
+
+            if image_rgb is not None:
+                img = process_img2(self, image_rgb)
+           
   
 
         last_transform = self.player.get_transform()
@@ -425,12 +423,11 @@ class World(gym.Env):
                 pygame.display.flip()
 
             self.episode_reward += self.reward
-            
 
-            image = process_img2(self, image_rgb)
+            if image_rgb is not None:
+                image = process_img2(self, image_rgb)
             
-            done = True if collision else False
-
+            
             
             if dist > self.max_dist:
                 done=True
@@ -439,6 +436,7 @@ class World(gym.Env):
             vehicle_location = self.player.get_location()
             y_vh = vehicle_location.y
             if y_vh > float(self.args.spawn_y)+self.distance_parked+15:
+                self.reward += 50
                 print("episode ended by reaching goal position")
                 done=True
 
@@ -452,11 +450,18 @@ class World(gym.Env):
             
             if lane == 1:
                 done = True
+                self.reward -= 50
                 print("Episode ended by lane invasion")
     
             if dist > self.max_dist:
                 done=True
+                self.reward -= 50
                 print(f"Episode  ended with dist from waypoint: {dist}")
+
+            velocity_vec_st = self.player.get_velocity()
+            current_speed = math.sqrt(velocity_vec_st.x**2 + velocity_vec_st.y**2 + velocity_vec_st.z**2)
+            if current_speed < 0.1:
+                done=True
                 
 
         return image, self.reward, done, truncated, {}
@@ -587,7 +592,9 @@ class World(gym.Env):
     def apply_vehicle_control(self, action):
 
         steer = action[0]
+        print(f'steer = {steer}')
         acceleration = action[1]
+        print(f'acceleration = {acceleration}')
 
         self._control.steer = steer
 
@@ -598,6 +605,8 @@ class World(gym.Env):
         else:
             self._control.throttle = acceleration
             self._control.brake = 0
+
+        print(self._control)    
 
         self.player.apply_control(self._control)
         self.control_count += 1

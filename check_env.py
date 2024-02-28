@@ -96,7 +96,7 @@ argparser.add_argument(
 argparser.add_argument(
     '--desired_speed',
     metavar='SPEED',
-    default='30',
+    default='15',
     type=float,
     help='desired speed for highway driving')
 argparser.add_argument(
@@ -139,8 +139,8 @@ try:
             fixed_delta_seconds=1/30))
     hud = HUD()
     world = World(client, carla_world, hud, args)
-    check_env(world)
-    # world.reset()
+    # check_env(world)
+    world.reset()
 
     # world.destroy()
 
