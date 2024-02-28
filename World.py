@@ -82,7 +82,7 @@ class World(gym.Env):
         self._settings = None
         self.collisions = []
         self.last_y = 0
-        self.distance_parked = 100
+        self.distance_parked = 35
         self.prev_action = np.array([0, 0, 0])
         self.realease_position = 15
         self.ttc_trigger = 1.0
@@ -266,7 +266,6 @@ class World(gym.Env):
             
             velocity_vec_st = self.player.get_velocity()
             current_speed = math.sqrt(velocity_vec_st.x**2 + velocity_vec_st.y**2 + velocity_vec_st.z**2)
-
 
 
             ttc = self.time_to_collison()
