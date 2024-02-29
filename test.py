@@ -7,8 +7,9 @@ import logging
 from stable_baselines3 import PPO #PPO
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.evaluation import evaluate_policy
+from sb3_contrib import RecurrentPPO
 
-run = '1709073714'
+run = '1709152015'
 logdir = f"logs/{run}/evaluation/"
 
 if not os.path.exists(logdir):
@@ -36,20 +37,11 @@ def game_loop(args):
         world = Monitor(world, logdir)
         world.reset()
 
-        model = PPO.load(f"F:/E2E-CARLA-ReinforcementLearning-PPO/logs/{run}/best_model.zip", env=world, print_system_info=True)
+        model = RecurrentPPO.load(f"F:/E2E-CARLA-ReinforcementLearning-PPO/logs/{run}/best_model.zip", env=world, print_system_info=True)
 
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=100)
 
 
-        vec_env = model.get_env()
-        obs = vec_env.reset()
-        iters = 0
-        while iters<10:  # how many testing iterations you want
-            iters += 1
-
-            action, _states = model.predict(obs, deterministic=True)
-            obs, rewards, dones, info = vec_env.step(action)
-           
                 
     finally:
 
@@ -164,7 +156,7 @@ def main():
     argparser.add_argument(
         '--desired_speed',
         metavar='SPEED', 
-        default='15',
+        default='20',
         type=float,
         help='desired speed for highway driving')
     argparser.add_argument(

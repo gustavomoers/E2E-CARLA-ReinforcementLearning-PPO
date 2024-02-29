@@ -14,9 +14,11 @@ from stable_baselines3.common.logger import configure
 from stable_baselines3.common.callbacks import CheckpointCallback
 import sys
 import traceback
+from sb3_contrib import RecurrentPPO
 
 
-run = '1709030808'
+
+run = '1709152015'
 logdir = f"logs/{run}"
 
 
@@ -41,7 +43,7 @@ def game_loop(args):
         #continue training (Path to the last saved model)
         model_path = f"logs/{run}/best_model.zip"
         log_path = f"logs/{run}/"
-        model = PPO.load(model_path, tensorboard_log=log_path, env=world, print_system_info=True)
+        model = RecurrentPPO.load(model_path, tensorboard_log=log_path, env=world, print_system_info=True)
     
 
         # Create Callback
@@ -50,12 +52,12 @@ def game_loop(args):
         # logger = HParamCallback()
         # printer = MeticLogger()
         # plotter = PlottingCallback(log_dir=logdir)
-        # checkpoint = CheckpointCallback(save_freq=500, save_path=models_dir)
+        checkpoint = CheckpointCallback(save_freq=10, save_path=logdir)
        
 
         TIMESTEPS = 500000 # how long is each training iteration - individual steps
-        model.learn(total_timesteps=TIMESTEPS, tb_log_name=f"PPO1", progress_bar=True, 
-                        callback = CallbackList([tensor, save_callback]), reset_num_timesteps=False) 
+        model.learn(total_timesteps=TIMESTEPS, tb_log_name=f"PPO3", progress_bar=True, 
+                        callback = CallbackList([tensor, save_callback, checkpoint]), reset_num_timesteps=False) 
         
     except AssertionError:
         _, _, tb = sys.exc_info()

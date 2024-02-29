@@ -82,7 +82,7 @@ class World(gym.Env):
         self._settings = None
         self.collisions = []
         self.last_y = 0
-        self.distance_parked = 35
+        self.distance_parked = 60
         self.prev_action = np.array([0, 0, 0])
         self.realease_position = 15
         self.ttc_trigger = 1.0
@@ -257,7 +257,7 @@ class World(gym.Env):
 
         while ttc > self.ttc_trigger: #player_position < parked_position - self.realease_position:
             
-            snapshot, image_rgb, lane, collision = self.synch_mode.tick(timeout=10.0)
+            # snapshot, image_rgb, lane, collision = self.synch_mode.tick(timeout=10.0)
 
             self.clock.tick_busy_loop(self.args.FPS)
 
