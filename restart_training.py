@@ -18,7 +18,7 @@ from sb3_contrib import RecurrentPPO
 
 
 
-run = '1709152015'
+run = '1709224739'
 logdir = f"logs/{run}"
 
 
@@ -41,22 +41,22 @@ def game_loop(args):
         world = Monitor(world, logdir)
         world.reset()
         #continue training (Path to the last saved model)
-        model_path = f"logs/{run}/best_model.zip"
+        model_path = f"logs/{run}/rl_model_8570_steps.zip"
         log_path = f"logs/{run}/"
         model = RecurrentPPO.load(model_path, tensorboard_log=log_path, env=world, print_system_info=True)
     
 
         # Create Callback
-        save_callback = SaveOnBestTrainingRewardCallback(check_freq=100, log_dir=logdir, verbose=1) 
+        save_callback = SaveOnBestTrainingRewardCallback(check_freq=500, log_dir=logdir, verbose=1) 
         tensor = TensorboardCallback()  
         # logger = HParamCallback()
         # printer = MeticLogger()
         # plotter = PlottingCallback(log_dir=logdir)
-        checkpoint = CheckpointCallback(save_freq=10, save_path=logdir)
+        checkpoint = CheckpointCallback(save_freq=500, save_path=logdir, verbose=1)
        
 
         TIMESTEPS = 500000 # how long is each training iteration - individual steps
-        model.learn(total_timesteps=TIMESTEPS, tb_log_name=f"PPO3", progress_bar=True, 
+        model.learn(total_timesteps=TIMESTEPS, tb_log_name=f"PPO", progress_bar=True, 
                         callback = CallbackList([tensor, save_callback, checkpoint]), reset_num_timesteps=False) 
         
     except AssertionError:

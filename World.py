@@ -82,7 +82,7 @@ class World(gym.Env):
         self._settings = None
         self.collisions = []
         self.last_y = 0
-        self.distance_parked = 60
+        self.distance_parked = 100
         self.prev_action = np.array([0, 0, 0])
         self.realease_position = 15
         self.ttc_trigger = 1.0

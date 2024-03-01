@@ -43,12 +43,12 @@ def game_loop(args):
         model = RecurrentPPO('CnnLstmPolicy', world, verbose=2, learning_rate=0.0003, n_steps=1280, n_epochs=20, batch_size=128, ent_coef=0.01,
                      tensorboard_log=logdir) # tensorboard_log=logdir
         # Create Callback
-        save_callback = SaveOnBestTrainingRewardCallback(check_freq=100, log_dir=logdir, verbose=1) 
+        save_callback = SaveOnBestTrainingRewardCallback(check_freq=500, log_dir=logdir, verbose=1) 
         tensor = TensorboardCallback()  
         # logger = HParamCallback()
         # printer = MeticLogger()
         # plotter = PlottingCallback(log_dir=logdir)
-        checkpoint = CheckpointCallback(save_freq=10, save_path=logdir)
+        checkpoint = CheckpointCallback(save_freq=500, save_path=logdir, verbose=1 )
        
 
         TIMESTEPS = 500000 # how long is each training iteration - individual steps
@@ -162,7 +162,7 @@ def main():
     argparser.add_argument(
         '--desired_speed',
         metavar='SPEED',
-        default='20',
+        default='30',
         type=float,
         help='desired speed for highway driving')
     argparser.add_argument(
