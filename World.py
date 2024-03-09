@@ -47,7 +47,7 @@ class World(gym.Env):
         self.delta_seconds = 1.0 / args.FPS
         self.last_v = 0
         self.last_y = 0
-        self.distance_parked = 35
+        self.distance_parked = 100
         self.ttc_trigger = 1.0
         self.episode_counter = 0
         self.steer = 0
