@@ -52,8 +52,8 @@ class World(gym.Env):
         self.episode_counter = 0
         self.steer = 0
         self.save_list = []
-        self.file_name = 'F:/E2E-CARLA-ReinforcementLearning-PPO/logs/1709073714-working-50kmh/evaluation/logger.csv'
-        self.logger = True
+        # self.file_name = 'F:/E2E-CARLA-ReinforcementLearning-PPO/logs/1709073714-working-50kmh/evaluation/logger.csv'
+        self.logger = False
 
         ## RL STABLE BASELINES
         self.action_space = spaces.Box(low=-1, high=1,shape=(2,),dtype="float")
