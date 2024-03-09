@@ -24,7 +24,7 @@ Below are the results showcasing the model's ability to avoid collisions:
 
 - **Model in Action**: Here are some GIFs demonstrating the model successfully avoiding collisions in the CARLA simulator.
 
-![Model Working 90 km/h]((https://github.com/gustavomoers/E2E-CARLA-ReinforcementLearning-PPO/assets/69984472/464d9dda-9524-40d8-92f6-dbf9c9f86c3f))
+![Model Working 90 km/h](https://github.com/gustavomoers/E2E-CARLA-ReinforcementLearning-PPO/assets/69984472/464d9dda-9524-40d8-92f6-dbf9c9f86c3f)
 
 ![Model Working 70 km/h](https://github.com/gustavomoers/E2E-CARLA-ReinforcementLearning-PPO/assets/69984472/fdee28d5-aedf-45db-9611-18ab532d81b0)
 
