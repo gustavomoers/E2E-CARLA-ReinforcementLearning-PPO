@@ -12,7 +12,7 @@ For more information on Stable Baselines3, visit their official website: [Stable
 
 ## Training
 
-The model was trained for 80,000 steps at a speed of 70 km/h. This initial training allowed the model to successfully learn collision avoidance strategies. It is important to note that further training could potentially improve the model's performance and effectiveness in avoiding collisions under various conditions.
+The model was trained for 80,000 steps at a speed of 90 km/h. This initial training allowed the model to successfully learn collision avoidance strategies. It is important to note that further training could potentially improve the model's performance and effectiveness in avoiding collisions under various conditions.
 
 ## Results
 
@@ -22,9 +22,9 @@ Below are the results showcasing the model's ability to avoid collisions:
 
 ![Reward vs. Step Graph](https://github.com/gustavomoers/E2E-CARLA-ReinforcementLearning-PPO/assets/69984472/8b3722f2-2156-4021-8175-ade4e0d5a600)
 
-- **Model in Action**: Here is a GIF demonstrating the model successfully avoiding collisions at 70 km/h in the CARLA simulator.
+- **Model in Action**: Here is a GIF demonstrating the model successfully avoiding collisions at 90 km/h in the CARLA simulator.
 
-![Model Working 70 km/h](https://github.com/gustavomoers/E2E-CARLA-ReinforcementLearning-PPO/assets/69984472/fdee28d5-aedf-45db-9611-18ab532d81b0)
+![Model Working 90 km/h](https://github.com/gustavomoers/E2E-CARLA-ReinforcementLearning-PPO/assets/69984472/194d23b4-482d-4c27-91fa-f2607a9675b9)
 
 ## Dependencies
 
@@ -39,7 +39,7 @@ To train the model, execute train.py which supports adjustable parameters via --
 
 ## Conclusion
 
-The PPO model trained on CARLA 0.9.12 for collision avoidance at 90 km/h shows promising results. While the initial training of 80,000 steps demonstrates the model's capability to learn effective avoidance strategies, further training could improve its performance. This project lays the groundwork for more advanced applications of reinforcement learning in autonomous vehicle technology.
+The PPO model trained on CARLA 0.9.12 for collision avoidance at 90 km/h shows promising results. While the initial training of 80,000 steps demonstrates the model's capability to learn effective avoidance strategies, further training could improve its performance.
 
 ## Contributions
 
