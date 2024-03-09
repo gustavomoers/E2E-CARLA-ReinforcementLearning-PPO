@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is an end-to-end application of reinforcement learning for collision avoidance in autonomous vehicles using the CARLA simulator. It uses the Proximal Policy Optimization (PPO) algorithm, within the CARLA environment (version 0.9.12) to teach a virtual car to avoid collisions at several speeds. This is an end-to-end approach wherethe input is a camera RGB image and the output are directly control values for acceleration and steering.
+This project is an end-to-end application of reinforcement learning for collision avoidance in autonomous vehicles using the CARLA simulator. It uses the Proximal Policy Optimization (PPO) algorithm, within the CARLA environment (version 0.9.12) to teach a virtual car to avoid collisions at several speeds. This is an end-to-end approach where the input is a camera RGB image and the outputs are directly control values for acceleration and steering.
 
 ## Model
 
