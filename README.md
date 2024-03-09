@@ -6,7 +6,7 @@ This project is an end-to-end application of reinforcement learning for collisio
 
 ## Model
 
-The reinforcement learning model used in this project is the [recurrent version]([https://stable-baselines3.readthedocs.io/](https://sb3-contrib.readthedocs.io/en/master/modules/ppo_recurrent.html) of the Proximal Policy Optimization (PPO) algorithm, implemented through the Stable Baselines3 library. This  version allows the model to maintain a memory of its past decisions, improving its decision-making process over time, particularly in environments that require understanding sequences of events for optimal actions.
+The reinforcement learning model used in this project is the [recurrent version](https://sb3-contrib.readthedocs.io/en/master/modules/ppo_recurrent.html) of the Proximal Policy Optimization (PPO) algorithm, implemented through the Stable Baselines3 library. This  version allows the model to maintain a memory of its past decisions, improving its decision-making process over time, particularly in environments that require understanding sequences of events for optimal actions.
 
 For more information on Stable Baselines3, visit their official website: [Stable Baselines3](https://stable-baselines3.readthedocs.io/).
 
