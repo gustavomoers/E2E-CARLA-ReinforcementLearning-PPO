@@ -12,7 +12,7 @@ For more information on Stable Baselines3, visit their official website: [Stable
 
 ## Training
 
-The model was trained for 80,000 steps at a speed of 90 km/h. This initial training allowed the model to successfully learn collision avoidance strategies. It is important to note that further training could potentially improve the model's performance and effectiveness in avoiding collisions under various conditions.
+The model was trained for 80,000 steps at a speed of 70 km/h. This initial training allowed the model to successfully learn collision avoidance strategies. It is important to note that further training could potentially improve the model's performance and effectiveness in avoiding collisions under various conditions.
 
 ## Results
 
