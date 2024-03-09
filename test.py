@@ -1,15 +1,14 @@
 import carla
 from Utils.utils import *
-from Utils.HUD_visuals import HUD as HUD
+from Utils.HUD import HUD as HUD
 from World import World
 import argparse
 import logging
-from stable_baselines3 import PPO #PPO
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.evaluation import evaluate_policy
 from sb3_contrib import RecurrentPPO
 
-run = '1709224739'
+run = '1709073714-working-50kmh'
 logdir = f"logs/{run}/evaluation/"
 
 if not os.path.exists(logdir):
@@ -18,15 +17,15 @@ if not os.path.exists(logdir):
 
 def game_loop(args): 
     world=None 
-    pygame.init()
-    pygame.font.init()  
+    # pygame.init()
+    # pygame.font.init()  
     try: 
 
         client = carla.Client(args.host, args.port)
         client.set_timeout(100.0)
 
 
-        hud = HUD(args.width, args.height)
+        hud = HUD()
         # carla_world = client.load_world(args.map)
         carla_world = client.get_world()
         carla_world.apply_settings(carla.WorldSettings(
@@ -37,7 +36,7 @@ def game_loop(args):
         world = Monitor(world, logdir)
         world.reset()
 
-        model = RecurrentPPO.load(f"F:/E2E-CARLA-ReinforcementLearning-PPO/logs/{run}/rl_model_47570_steps.zip", env=world, print_system_info=True)
+        model = RecurrentPPO.load(f"F:/E2E-CARLA-ReinforcementLearning-PPO/logs/{run}/best_model.zip", env=world, print_system_info=True)
 
         mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=100)
 
@@ -45,17 +44,11 @@ def game_loop(args):
                 
     finally:
 
-        if (world and world.recording_enabled):
-            client.stop_recorder()
-
         if world is not None:
             world.destroy()  
 
-        pygame.quit()
+        # pygame.quit()
                   
-
-
-
 
 
 
@@ -156,7 +149,7 @@ def main():
     argparser.add_argument(
         '--desired_speed',
         metavar='SPEED', 
-        default='30',
+        default='15',
         type=float,
         help='desired speed for highway driving')
     argparser.add_argument(

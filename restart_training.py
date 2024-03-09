@@ -18,7 +18,7 @@ from sb3_contrib import RecurrentPPO
 
 
 
-run = '1709224739'
+run = '1709224739-working-90kmh'
 logdir = f"logs/{run}"
 
 
@@ -31,7 +31,7 @@ def game_loop(args):
         client = carla.Client(args.host, args.port)
         client.set_timeout(100.0)
         hud = HUD()
-        # carla_world = client.load_world(args.map)
+        carla_world = client.load_world(args.map)
         carla_world = client.get_world()
         carla_world.apply_settings(carla.WorldSettings(
             no_rendering_mode=False,
@@ -41,7 +41,7 @@ def game_loop(args):
         world = Monitor(world, logdir)
         world.reset()
         #continue training (Path to the last saved model)
-        model_path = f"logs/{run}/rl_model_8570_steps.zip"
+        model_path = f"logs/{run}/rl_model_47570_steps.zip"
         log_path = f"logs/{run}/"
         model = RecurrentPPO.load(model_path, tensorboard_log=log_path, env=world, print_system_info=True)
     

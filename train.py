@@ -5,12 +5,10 @@ from Utils.HUD import HUD as HUD
 from World import World
 import argparse
 import logging
-from stable_baselines3 import PPO #PPO
 import os
 from stable_baselines3.common.callbacks import CallbackList
 from callbacks import *
 from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.logger import configure
 from stable_baselines3.common.callbacks import CheckpointCallback
 from sb3_contrib import RecurrentPPO
 logdir = f"logs/{int(time.time())}/"
@@ -18,9 +16,6 @@ logdir = f"logs/{int(time.time())}/"
 
 if not os.path.exists(logdir):
 	os.makedirs(logdir)
-
-
-# new_logger = configure(logdir, ["stdout", "csv", "tensorboard"])
 
 def game_loop(args): 
     world=None   
@@ -41,17 +36,15 @@ def game_loop(args):
 
 
         model = RecurrentPPO('CnnLstmPolicy', world, verbose=2, learning_rate=0.0003, n_steps=1280, n_epochs=20, batch_size=128, ent_coef=0.01,
-                     tensorboard_log=logdir) # tensorboard_log=logdir
+                     tensorboard_log=logdir) 
+        
         # Create Callback
         save_callback = SaveOnBestTrainingRewardCallback(check_freq=500, log_dir=logdir, verbose=1) 
         tensor = TensorboardCallback()  
-        # logger = HParamCallback()
-        # printer = MeticLogger()
-        # plotter = PlottingCallback(log_dir=logdir)
         checkpoint = CheckpointCallback(save_freq=500, save_path=logdir, verbose=1 )
        
 
-        TIMESTEPS = 500000 # how long is each training iteration - individual steps
+        TIMESTEPS = 500000 
         model.learn(total_timesteps=TIMESTEPS, reset_num_timesteps=False, tb_log_name=f"PPO", progress_bar=True, 
                         callback = CallbackList([tensor, save_callback, checkpoint])) 
                 
@@ -59,10 +52,6 @@ def game_loop(args):
 
             if world is not None:
                 world.destroy()        
-
-
-
-
 
 
 
