@@ -8,7 +8,7 @@ from stable_baselines3 import PPO #PPO
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.evaluation import evaluate_policy
 
-run = '1709073714'
+run = '1709073714-working-50kmh'
 logdir = f"logs/{run}/evaluation/"
 
 if not os.path.exists(logdir):
@@ -170,7 +170,7 @@ def main():
     argparser.add_argument(
         '--control_mode',
         metavar='CONT',
-        default='PID',
+        default='MPC',
         help='Controller')
     argparser.add_argument(
         '--planning_horizon',

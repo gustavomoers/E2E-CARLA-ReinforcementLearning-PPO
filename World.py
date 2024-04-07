@@ -82,13 +82,13 @@ class World(gym.Env):
         self._settings = None
         self.collisions = []
         self.last_y = 0
-        self.distance_parked = 35
+        self.distance_parked = 100
         self.prev_action = np.array([0, 0, 0])
         self.realease_position = 15
         self.ttc_trigger = 1.0
         self.episode_counter = 0
         self.save_list = []
-        # self.file_name = 'F:/CollisionAvoidance-Carla-DRL-MPC/logs/1706814212/evaluation/35m_14ms_15mRelease/logger.csv'
+        self.file_name = 'F:/E2E-CARLA-ReinforcementLearning-PPO/logs/1709073714-working-50kmh/evaluation/50kmh_100m_OFFICIAL/logger50_100m.csv'
 
         ## RL STABLE BASELINES
         self.action_space = spaces.Box(low=-1, high=1,shape=(2,),dtype="float")
@@ -119,7 +119,7 @@ class World(gym.Env):
         self.desired_speed = self.args.desired_speed
 
         self.episode_counter += 1
-        # self.append_to_csv(file_name=self.file_name, data=self.save_list)
+        self.append_to_csv(file_name=self.file_name, data=self.save_list)
         self.save_list = []
 
         if self.visuals:
@@ -569,6 +569,25 @@ class World(gym.Env):
                     for i in range(int(self.waypoint_lookahead_distance / self.waypoint_resolution)):
                         waypoints.append([current_waypoint.transform.location.x, current_waypoint.transform.location.y, self.desired_speed])
                         current_waypoint = current_waypoint.next(self.waypoint_resolution)[0]
+
+                elif self.control_mode == "MPC" and action is None:
+                    road_desired_speed = self.desired_speed
+                    dist = self.time_step * current_speed + 0.1
+                    prev_waypoint = self.map.get_waypoint(current_location)
+                    current_waypoint = prev_waypoint.next(dist)[0]
+                    # print(current_waypoint)
+                    waypoints = []                   
+                    # road_desired_speed = world.player.get_speed_limit()/3.6*0.95
+                    for i in range(self.planning_horizon):
+                        if self.control_count + i <= 100:
+                            desired_speed = (self.control_count + 1 + i)/100.0 * road_desired_speed
+                        else:
+                            desired_speed = road_desired_speed
+                        dist = self.time_step * road_desired_speed
+                        current_waypoint = prev_waypoint.next(dist)[0]
+                        # print(f"current_waypoint: {current_waypoint}")
+                        waypoints.append([current_waypoint.transform.location.x, current_waypoint.transform.location.y, road_desired_speed, wrap_angle(current_waypoint.transform.rotation.yaw)])
+                        prev_waypoint = current_waypoint
 
 
                 # print(f'wp real: {waypoints}')
