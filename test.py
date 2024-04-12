@@ -1,6 +1,6 @@
 import carla
 from Utils.utils import *
-from Utils.HUD import HUD as HUD
+from Utils.HUD_visuals import HUD as HUD
 from World import World
 import argparse
 import logging
@@ -17,22 +17,22 @@ if not os.path.exists(logdir):
 
 def game_loop(args): 
     world=None 
-    # pygame.init()
-    # pygame.font.init()  
+    pygame.init()
+    pygame.font.init()  
     try: 
 
         client = carla.Client(args.host, args.port)
         client.set_timeout(100.0)
 
 
-        hud = HUD()
-        # carla_world = client.load_world(args.map)
+        hud = HUD(args.width, args.height)
+        carla_world = client.load_world(args.map)
         carla_world = client.get_world()
         carla_world.apply_settings(carla.WorldSettings(
             no_rendering_mode=False,
             synchronous_mode=True,
             fixed_delta_seconds=1/args.FPS))
-        world = World(client, carla_world, hud, args, visuals=False)
+        world = World(client, carla_world, hud, args, visuals=True)
         world = Monitor(world, logdir)
         world.reset()
 
@@ -47,7 +47,7 @@ def game_loop(args):
         if world is not None:
             world.destroy()  
 
-        # pygame.quit()
+        pygame.quit()
                   
 
 

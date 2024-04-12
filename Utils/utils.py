@@ -234,3 +234,13 @@ def find_weather_presets():
 def get_actor_display_name(actor, truncate=250):
     name = ' '.join(actor.type_id.replace('_', '.').title().split('.')[1:])
     return (name[:truncate - 1] + u'\u2026') if len(name) > truncate else name
+
+
+
+
+def next_weather(self, reverse=False):
+    self._weather_index += -1 if reverse else 1
+    self._weather_index %= len(self._weather_presets)
+    preset = self._weather_presets[self._weather_index]
+    self.hud.notification('Weather: %s' % preset[1])
+    self.player.get_world().set_weather(preset[0])

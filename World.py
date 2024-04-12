@@ -8,9 +8,10 @@ import math
 import gym
 import gymnasium as gym
 from gymnasium import spaces
-from Utils.HUD import HUD as HUD
+# from Utils.HUD import HUD as HUD
 from Utils.CubicSpline.cubic_spline_planner import *
 import csv
+from Utils.HUD_visuals import *
 
 
 
@@ -21,6 +22,7 @@ class World(gym.Env):
         self.map = self.world.get_map()
         self.hud = hud
         self.args = args
+        self._gamma = args.gamma
         self.waypoint_resolution = args.waypoint_resolution
         self.waypoint_lookahead_distance = args.waypoint_lookahead_distance
         self.desired_speed = args.desired_speed
@@ -47,7 +49,7 @@ class World(gym.Env):
         self.delta_seconds = 1.0 / args.FPS
         self.last_v = 0
         self.last_y = 0
-        self.distance_parked = 100
+        self.distance_parked = 35
         self.ttc_trigger = 1.0
         self.episode_counter = 0
         self.steer = 0
@@ -55,10 +57,22 @@ class World(gym.Env):
         # self.file_name = 'F:/E2E-CARLA-ReinforcementLearning-PPO/logs/1709073714-working-50kmh/evaluation/logger.csv'
         self.logger = False
 
+        #VISUAL PYGAME
+        self._weather_presets = find_weather_presets()
+        self.visuals = visuals
+        self.collision_sensor_hud = None
+        self.lane_invasion_sensor = None
+        self.gnss_sensor = None
+        self.camera_manager = None
+
+
         ## RL STABLE BASELINES
         self.action_space = spaces.Box(low=-1, high=1,shape=(2,),dtype="float")
         self.observation_space = spaces.Box(low=-0, high=255, shape=(128, 128, 1), dtype=np.uint8)
 
+        # self.visuals = visuals
+        # if self.visuals:
+        #     self._initiate_visuals()
 
         self.global_t = 0 # global timestep
 
@@ -67,6 +81,10 @@ class World(gym.Env):
         with open(file_name, 'a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(data)
+
+    def render(self, display):
+        self.camera_manager.render(display)
+        self.hud.render(display)
 
 
     def reset(self, seed=None):
@@ -79,6 +97,13 @@ class World(gym.Env):
             fixed_delta_seconds=1/self.args.FPS))
         self.episode_reward = 0
         self.desired_speed = self.args.desired_speed
+
+        if self.visuals:
+            # Keep same camera config if the camera manager exists.
+            cam_index = self.camera_manager.index if self.camera_manager is not None else 0
+            cam_pos_index = self.camera_manager.transform_index if self.camera_manager is not None else 0
+            # # # Get a random blueprint.
+        
 
         self.episode_counter += 1
 
@@ -105,8 +130,19 @@ class World(gym.Env):
         self.episode_start = time.time()
 
 
+        if self.visuals:
+            self.collision_sensor_hud = CollisionSensor(self.player, self.hud)
+            self.lane_invasion_sensor = LaneInvasionSensor(self.player, self.hud)
+            self.gnss_sensor = GnssSensor(self.player)
+            self.camera_manager = CameraManager(self.player, self.hud, self._gamma)
+            self.camera_manager.transform_index = cam_pos_index
+            self.camera_manager.set_sensor(cam_index, notify=False)
+
+
+
         self.world.tick()             
         self.clock = pygame.time.Clock()
+
             
         ttc = self.time_to_collison()
 
@@ -114,6 +150,21 @@ class World(gym.Env):
             
 
             self.clock.tick_busy_loop(self.args.FPS)
+
+            if self.visuals:  
+                self.display = pygame.display.set_mode(
+                            (self.args.width, self.args.height),
+                            pygame.HWSURFACE | pygame.DOUBLEBUF)
+                self.display.fill((0,0,0))
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        run = False
+
+                self.tick(self.clock)
+                self.render(self.display)
+                pygame.display.update()
+           
 
             if self.parse_events(clock=self.clock, action=None):
                  return
@@ -145,6 +196,7 @@ class World(gym.Env):
     def tick(self, clock):
         self.hud.tick(self, clock)
 
+
     def destroy(self):
         self.world.tick()
             
@@ -153,7 +205,13 @@ class World(gym.Env):
             self.collision_sensor,
             self.camera_rgb,
             self.lane_invasion,
-            self.parked_vehicle]        
+            self.parked_vehicle]    
+
+        if self.collision_sensor_hud is not None:
+            actors.append(self.collision_sensor_hud.sensor)
+            actors.append(self.lane_invasion_sensor.sensor)
+            actors.append(self.gnss_sensor.sensor)
+            actors.append(self.camera_manager.sensor)           
                            
         for actor in actors:
             if actor is not None:
@@ -199,6 +257,18 @@ class World(gym.Env):
             
             
             self.reward = self.reward_value(cos_yaw_diff, dist, collision, lane, traveled)
+
+
+            if self.visuals:
+                self.display.fill((0,0,0))
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        run = False                
+
+                self.tick(self.clock)
+                self.render(self.display)
+                pygame.display.flip()
+
      
             self.episode_reward += self.reward
 
@@ -215,6 +285,7 @@ class World(gym.Env):
             if y_vh > float(self.args.spawn_y)+self.distance_parked+15:
                 self.reward += 50
                 print("episode ended by reaching goal position")
+                self.hud.notification("episode ended by reaching goal position")
                 done=True
 
 
@@ -224,20 +295,24 @@ class World(gym.Env):
             if collision == 1:
                 done=True
                 print("Episode ended by collision")
+                self.hud.notification("episode ended by collision")
             
             if lane == 1:
                 done = True
                 self.reward -= 50
                 print("Episode ended by lane invasion")
+                self.hud.notification("episode ended by lane invasion")
     
             if dist > self.max_dist:
                 done=True
                 self.reward -= 50
                 print(f"Episode  ended with dist from waypoint: {dist}")
+                self.hud.notification(f"Episode  ended with dist from waypoint: {dist}")
 
             velocity_vec_st = self.player.get_velocity()
             current_speed = math.sqrt(velocity_vec_st.x**2 + velocity_vec_st.y**2 + velocity_vec_st.z**2)
             if current_speed < 0.1:
+                self.hud.notification("episode ended by fully stopping")
                 done=True
                 
 
