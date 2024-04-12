@@ -421,6 +421,11 @@ class World(gym.Env):
         self.world.tick()   
         print('vehicle spawned')
 
+        # Turn on position lights
+        current_lights = carla.VehicleLightState.NONE
+        current_lights |= carla.VehicleLightState.Position
+        self.player.set_light_state(carla.VehicleLightState.Position)
+
         # CAMERA RGB
 
         self.rgb_cam = self.blueprint_library.find('sensor.camera.rgb')
