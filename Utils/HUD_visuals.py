@@ -99,7 +99,7 @@ Use ARROWS or WASD keys for control.
             '',
             'Vehicle: % 20s' % get_actor_display_name(world.player, truncate=20),
             'Map:     % 20s' % world.map.name,
-            'Simulation time: % 12s' % datetime.timedelta(seconds=int(self.simulation_time)),
+            'RL model:  End-to-End-Approach' #% datetime.timedelta(seconds=int(self.simulation_time)),
             '',
             'Speed:   % 15.0f km/h' % (3.6 * math.sqrt(v.x**2 + v.y**2 + v.z**2)),
             u'Heading:% 16.0f\N{DEGREE SIGN} % 2s' % (t.rotation.yaw, heading),
@@ -114,8 +114,8 @@ Use ARROWS or WASD keys for control.
                 ('Brake:', c.brake, 0.0, 1.0),
                 ('Reverse:', c.reverse),
                 ('Hand brake:', c.hand_brake),
-                ('Manual:', c.manual_gear_shift),
-                'Gear:        %s' % {-1: 'R', 0: 'N'}.get(c.gear, c.gear)]
+                ('Manual:', c.manual_gear_shift),]
+                # 'Gear:        %s' % {-1: 'R', 0: 'N'}.get(c.gear, c.gear)]
         elif isinstance(c, carla.WalkerControl):
             self._info_text += [
                 ('Speed:', c.speed, 0.0, 5.556),

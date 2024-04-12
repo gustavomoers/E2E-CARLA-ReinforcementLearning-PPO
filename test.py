@@ -8,7 +8,7 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.evaluation import evaluate_policy
 from sb3_contrib import RecurrentPPO
 
-run = '1709073714-working-50kmh'
+run = '1709224739-working-90kmh'
 logdir = f"logs/{run}/evaluation/"
 
 if not os.path.exists(logdir):
@@ -26,7 +26,7 @@ def game_loop(args):
 
 
         hud = HUD(args.width, args.height)
-        carla_world = client.load_world(args.map)
+        # carla_world = client.load_world(args.map)
         carla_world = client.get_world()
         carla_world.apply_settings(carla.WorldSettings(
             no_rendering_mode=False,
@@ -149,7 +149,7 @@ def main():
     argparser.add_argument(
         '--desired_speed',
         metavar='SPEED', 
-        default='15',
+        default='30',
         type=float,
         help='desired speed for highway driving')
     argparser.add_argument(

@@ -49,7 +49,7 @@ class World(gym.Env):
         self.delta_seconds = 1.0 / args.FPS
         self.last_v = 0
         self.last_y = 0
-        self.distance_parked = 35
+        self.distance_parked = 100
         self.ttc_trigger = 1.0
         self.episode_counter = 0
         self.steer = 0
@@ -495,6 +495,12 @@ class World(gym.Env):
         self.player = self.world.try_spawn_actor(self.vehicle_blueprint.filter('model3')[0], spawn_transform)
         self.world.tick()   
         print('vehicle spawned')
+
+
+        # Turn on position lights
+        current_lights = carla.VehicleLightState.NONE
+        current_lights |= carla.VehicleLightState.Position
+        self.player.set_light_state(carla.VehicleLightState.Position)
 
         # CAMERA RGB
 
