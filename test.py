@@ -8,7 +8,7 @@ from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.evaluation import evaluate_policy
 from sb3_contrib import RecurrentPPO
 
-run = '1709073714-working-50kmh'
+run = '1709152015-working-70kmh'
 logdir = f"logs/{run}/evaluation/"
 
 if not os.path.exists(logdir):
@@ -149,13 +149,13 @@ def main():
     argparser.add_argument(
         '--desired_speed',
         metavar='SPEED', 
-        default='15',
+        default='20',
         type=float,
         help='desired speed for highway driving')
     argparser.add_argument(
         '--control_mode',
         metavar='CONT',
-        default='PID',
+        default='MPC',
         help='Controller')
     argparser.add_argument(
         '--planning_horizon',

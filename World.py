@@ -2,6 +2,7 @@ import pygame
 import carla
 from Utils.synch_mode import CarlaSyncMode
 import Controller.PIDController as PIDController
+import Controller.MPCController as MPCController
 import time
 from Utils.utils import *
 import math
@@ -40,6 +41,8 @@ class World(gym.Env):
         self.camera_rgb = None
         self.lane_invasion = None
         self._autopilot_enabled = False
+        self.planning_horizon = args.planning_horizon
+        self.time_step = args.time_step
         self._control = carla.VehicleControl()
         self.max_dist = 4.5
         self.counter = 0
@@ -52,8 +55,8 @@ class World(gym.Env):
         self.episode_counter = 0
         self.steer = 0
         self.save_list = []
-        # self.file_name = 'F:/E2E-CARLA-ReinforcementLearning-PPO/logs/1709073714-working-50kmh/evaluation/logger.csv'
-        self.logger = False
+        self.file_name = 'F:/E2E-CARLA-ReinforcementLearning-PPO/logs/1709152015-working-70kmh/evaluation/70kmh_100m_OFFICIAL/logger.csv'
+        self.logger = True
 
         ## RL STABLE BASELINES
         self.action_space = spaces.Box(low=-1, high=1,shape=(2,),dtype="float")
@@ -349,6 +352,26 @@ class World(gym.Env):
                         current_waypoint = current_waypoint.next(self.waypoint_resolution)[0]
 
 
+                elif self.control_mode == "MPC" and action is None:
+                    road_desired_speed = self.desired_speed
+                    dist = self.time_step * current_speed + 0.1
+                    prev_waypoint = self.map.get_waypoint(current_location)
+                    current_waypoint = prev_waypoint.next(dist)[0]
+                    # print(current_waypoint)
+                    waypoints = []                   
+                    # road_desired_speed = world.player.get_speed_limit()/3.6*0.95
+                    for i in range(self.planning_horizon):
+                        if self.control_count + i <= 100:
+                            desired_speed = (self.control_count + 1 + i)/100.0 * road_desired_speed
+                        else:
+                            desired_speed = road_desired_speed
+                        dist = self.time_step * road_desired_speed
+                        current_waypoint = prev_waypoint.next(dist)[0]
+                        # print(f"current_waypoint: {current_waypoint}")
+                        waypoints.append([current_waypoint.transform.location.x, current_waypoint.transform.location.y, road_desired_speed, wrap_angle(current_waypoint.transform.rotation.yaw)])
+                        prev_waypoint = current_waypoint
+
+
                 # print(f'wp real: {waypoints}')
                 if action is not None:
                     waypoints_RL = self.get_cubic_spline_path(action, current_x=current_x, current_y=current_y)
@@ -476,6 +499,12 @@ class World(gym.Env):
         if self.control_mode == "PID":
             self.controller = PIDController.Controller()
 
+        elif self.control_mode == "MPC":
+            physic_control = self.player.get_physics_control()
+            physic_control.use_sweep_wheel_collision = True
+            # print("Control: MPC")
+            lf, lr, l = get_vehicle_wheelbases(physic_control.wheels, physic_control.center_of_mass )
+            self.controller = MPCController.Controller(lf = lf, lr = lr, wheelbase=l, planning_horizon = self.planning_horizon, time_step = self.time_step)
 
 
     def get_observation(self):
